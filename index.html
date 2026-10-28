@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f0f14">
+<meta name="description" content="Chat de Argentina gratis: salas por provincias, comunidades, mayores de 30, 40 y 50, encuentros, privados con fotos y música de YouTube. Solo mayores de 18 años.">
+<meta name="keywords" content="chat argentina, chat gratis argentina, salas de chat, chat por provincias, chat argentino, chat online, chat amigos, chat encuentros">
+<meta name="robots" content="index, follow">
+<title>Chat de Argentina - Salas gratis por provincias y comunidades</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{
+  --bg:#f4f5f7; --panel:#ffffff; --panel2:#eceef2; --border:#e2e4ea;
+  --text:#14161a; --muted:#878d98; --accent:#6c5ce7; --active:#eceaff;
+}
+:root[data-theme="dark"]{
+  --bg:#101014; --panel:#17171e; --panel2:#20202a; --border:#2c2c38;
+  --text:#f2f2f5; --muted:#9a9aad; --active:#2a2445;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);height:100dvh;display:flex;overflow:hidden}
+button,input{font:inherit}
+#sidebar{width:262px;flex:none;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.side-head{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 8px}
+.side-head h1{font-size:17px;font-weight:600}
+.addbtn{width:30px;height:30px;border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:8px;cursor:pointer;font-size:15px}
+#online{flex:none;max-height:230px;overflow-y:auto;border-bottom:1px solid var(--border);padding-bottom:4px}
+#rooms{flex:1;overflow-y:auto;padding:4px 8px 8px}
+.sec{padding:12px 10px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.room{display:flex;align-items:center;gap:10px;padding:8px 10px;margin:1px 0;border-radius:9px;cursor:pointer;color:var(--muted)}
+.room:hover{background:var(--panel2)}
+.room.active{background:var(--active);color:var(--accent);font-weight:600}
+.room .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.room span.nm{flex:1;font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.userbox{padding:12px 16px;border-top:1px solid var(--border);font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#main{flex:1;display:flex;flex-direction:column;min-width:0}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--panel)}
+header h2{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.online{width:8px;height:8px;border-radius:50%;background:#2ecc71;flex:none}
+#menuBtn{display:none;width:34px;height:34px;border:1px solid var(--border);background:transparent;color:var(--text);border-radius:8px;cursor:pointer;font-size:16px;flex:none}
+#msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:8px;align-items:flex-start}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex:none}
+.bdy{max-width:78%}
+.meta{display:flex;gap:6px;align-items:baseline;margin-bottom:2px}
+.meta .u{font-size:13px;font-weight:600;cursor:pointer}
+.meta .u:active{color:var(--accent)}
+.meta .t{font-size:11px;color:var(--muted)}
+.bbl{font-size:14px;line-height:20px;padding:8px 12px;border-radius:14px;background:var(--panel);border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.04);width:fit-content;overflow-wrap:anywhere}
+.bbl img{display:block;max-width:230px;border-radius:10px}
+.msg.mine{flex-direction:row-reverse}
+.msg.mine .bbl{background:var(--accent);border-color:transparent;color:#fff;box-shadow:0 2px 6px rgba(108,92,231,.25)}
+#composer{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border);background:var(--panel)}
+#inp{flex:1;border:1px solid var(--border);border-radius:22px;padding:11px 16px;font-size:16px;background:var(--bg);color:var(--text);outline:none;min-width:0}
+#inp:focus{border-color:var(--accent)}
+#send{width:44px;height:44px;border:none;border-radius:50%;background:var(--accent);color:#fff;cursor:pointer;font-size:18px;flex:none}
+#send:active{opacity:.85}
+#emojiBtn{width:44px;height:44px;border:1px solid var(--border);border-radius:50%;background:var(--panel);color:var(--text);cursor:pointer;font-size:18px;flex:none}
+#ytplayer{position:relative;width:230px;max-width:100%;border-radius:10px;overflow:hidden;cursor:pointer}
+#ytplayer img{display:block;width:100%}
+#ytplayer .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);color:#fff;font-size:34px}
+#ytplayer iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+#picBtn{display:none;width:44px;height:44px;border:1px solid var(--border);border-radius:50%;background:var(--panel);color:var(--text);cursor:pointer;font-size:18px;flex:none}
+#picBtn.show{display:block}
+#conn{font-size:11px;padding:4px 16px;color:var(--muted);background:var(--panel);text-align:center}
+#pvnote{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:50;background:var(--accent);color:#fff;padding:10px 16px;border-radius:24px;font-size:14px;font-weight:500;cursor:pointer;display:none;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:92vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#closeBtn{display:none}
+.ytitem:hover{background:var(--panel2)}
+#gamebox{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+#gamebox .gh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+#gamebox .gh b{font-size:13px}
+#gamebox .gs{font-size:12px;color:var(--muted)}
+#gamebox .gx{border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:14px}
+.ggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.gcell{aspect-ratio:1;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:26px;font-weight:700;cursor:pointer;color:var(--text)}
+.gcell:disabled{cursor:default}
+.gcell.win{background:var(--active)}
+@media(max-width:640px){
+  #sidebar{position:fixed;inset:0 auto 0 0;z-index:20;transform:translateX(-100%);transition:transform .25s}
+  #sidebar.open{transform:none;box-shadow:0 0 40px rgba(0,0,0,.5)}
+  #menuBtn{display:block}
+  #closeBtn{display:block}
+  .bdy{max-width:85%}
+  .bbl img{max-width:190px}
+  #ytplayer{width:190px}
+}
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="side-head"><h1>Salas</h1><span style="display:flex;gap:6px"><button class="addbtn" id="themeBtn" title="Cambiar tema">🌙</button><button class="addbtn" id="dmBtn" title="Nuevo privado">＋</button><button class="addbtn" id="closeBtn" title="Cerrar menú">✕</button></span></div>
+  <div id="online"></div>
+  <div id="rooms"></div>
+  <div class="userbox" id="userbox"></div>
+  <div style="padding:10px 16px;border-top:1px solid var(--border)"><button id="exitBtn" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;font-size:13px">🚪 Salir del chat</button></div>
+  <div style="padding:0 16px 12px"><a href="chatdearg.apk" download style="display:block;text-align:center;padding:9px;border-radius:8px;background:var(--accent);color:#fff;font-size:13px;text-decoration:none;font-weight:600">📱 Descargar la app</a></div>
+</nav>
+<div id="backdrop" style="display:none;position:fixed;inset:0;z-index:15;background:rgba(0,0,0,.5)"></div>
+
+<div id="main">
+  <header>
+    <button id="menuBtn">☰</button>
+    <button id="gameBtn" title="Juegos" style="display:none;width:34px;height:34px;border:1px solid var(--border);background:transparent;color:var(--text);border-radius:8px;cursor:pointer;font-size:16px;flex:none">🎮</button>
+    <span class="online"></span>
+    <h2 id="roomName">—</h2>
+  </header>
+  <div id="conn">conectando…</div>
+  <div id="msgs"></div>
+  <div id="composer">
+    <button id="emojiBtn" title="Emojis">😀</button>
+    <button id="picBtn" title="Enviar foto">📷</button>
+    <input id="inp" placeholder="Escribe un mensaje…" autocomplete="off" enterkeyhint="send">
+    <button id="send" title="Enviar">➤</button>
+  </div>
+</div>
+<div id="pvnote"></div>
+<div id="kick" style="display:none;position:fixed;inset:0;z-index:99;background:var(--bg);color:var(--text);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;gap:14px">
+  <div style="font-size:56px">🚫</div>
+  <h2 style="font-size:22px">Fuiste expulsado del chat</h2>
+  <p style="color:var(--muted);font-size:14px;max-width:320px;line-height:21px">El moderador automático detectó contenido relacionado con menores de edad. Esta sala es solo para mayores de 18 años.</p>
+</div>
+<input type="file" id="fileInp" accept="image/*" style="display:none">
+
+<script type="module">
+// ═══ CONFIGURACIÓN ═══
+const SUPABASE_URL = "https://rtzwhdlllvgundjcwllg.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_gkYqTjmPg3VHhgZFjp1Syg_ZPBD46tM";
+const PHOTO_BUCKET = "fotos";
+const ADMIN = "PininO";
+const ADMIN_PIN = "2207@";
+// ═════════════════════
+
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const PAL = ["#8e8ea0","#3498db","#9b59b6","#e74c3c","#2ecc71","#f39c12","#1abc9c","#e67e22","#e84393","#00cec9","#6c5ce7","#fd79a8","#00b894","#a29bfe","#d63031","#16a085","#c0392b","#f1c40f","#2980b9","#8e44ad","#d35400","#27ae60","#e17055","#00cec9","#e84393"];
+
+const PUBLIC = [
+  {sec:"salas", id:"general",    name:"General"},
+  {sec:"salas", id:"amigos",     name:"Amigos"},
+  {sec:"salas", id:"encuentros", name:"Encuentros"},
+  {sec:"salas", id:"hot",        name:"Hot 🔥"},
+  {sec:"comunidades", id:"lesbianas", name:"Lesbianas"},
+  {sec:"comunidades", id:"gay",       name:"Gay"},
+  {sec:"comunidades", id:"may30",     name:"Mayores de 30"},
+  {sec:"comunidades", id:"may40",     name:"Mayores de 40"},
+  {sec:"comunidades", id:"may50",     name:"Mayores de 50"},
+  {sec:"prov", id:"p-baires",   name:"Buenos Aires"},
+  {sec:"prov", id:"p-caba",     name:"CABA"},
+  {sec:"prov", id:"p-catamarca",name:"Catamarca"},
+  {sec:"prov", id:"p-chaco",    name:"Chaco"},
+  {sec:"prov", id:"p-chubut",   name:"Chubut"},
+  {sec:"prov", id:"p-cordoba",  name:"Córdoba"},
+  {sec:"prov", id:"p-corrientes",name:"Corrientes"},
+  {sec:"prov", id:"p-entrerios",name:"Entre Ríos"},
+  {sec:"prov", id:"p-formosa",  name:"Formosa"},
+  {sec:"prov", id:"p-jujuy",    name:"Jujuy"},
+  {sec:"prov", id:"p-lapampa",  name:"La Pampa"},
+  {sec:"prov", id:"p-larioja",  name:"La Rioja"},
+  {sec:"prov", id:"p-mendoza",  name:"Mendoza"},
+  {sec:"prov", id:"p-misiones", name:"Misiones"},
+  {sec:"prov", id:"p-neuquen",  name:"Neuquén"},
+  {sec:"prov", id:"p-rionegro", name:"Río Negro"},
+  {sec:"prov", id:"p-salta",    name:"Salta"},
+  {sec:"prov", id:"p-sanjuan",  name:"San Juan"},
+  {sec:"prov", id:"p-sanluis",  name:"San Luis"},
+  {sec:"prov", id:"p-santacruz",name:"Santa Cruz"},
+  {sec:"prov", id:"p-santafe",  name:"Santa Fe"},
+  {sec:"prov", id:"p-sgoestero",name:"Sgo. del Estero"},
+  {sec:"prov", id:"p-tdf",      name:"Tierra del Fuego"},
+  {sec:"prov", id:"p-tucuman",  name:"Tucumán"},
+];
+PUBLIC.forEach((r,i)=> r.color = PAL[i % PAL.length]);
+
+let user = "";
+while (true) {
+  user = (localStorage.getItem("chat_user") || prompt("Para entrar al chat necesitás un nombre de usuario (es obligatorio):") || "").trim().slice(0,20);
+  if (!user) { localStorage.removeItem("chat_user"); continue; }
+  if (user.toLowerCase() === ADMIN.toLowerCase()) {
+    const pin = prompt("Este nombre está reservado. Ingresá el PIN de administrador:");
+    if (pin !== ADMIN_PIN) { alert("PIN incorrecto. Elegí otro nombre de usuario."); localStorage.removeItem("chat_user"); continue; }
+  }
+  localStorage.setItem("chat_user", user);
+  break;
+}
+
+let dms = JSON.parse(localStorage.getItem("chat_dms") || "[]");
+let active = "general";
+let G = null;
+const seen = new Set();
+const subscribed = new Set();
+const $ = id => document.getElementById(id);
+const initials = n => n.trim().split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+const hcolor = n => { let h=0; for (const c of n) h=(h*31+c.charCodeAt(0))%360; return `hsl(${h},55%,55%)`; };
+const now = () => { const d=new Date(); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const isDM = id => id.startsWith("dm:");
+const dmId = o => "dm:" + [user, o].map(s=>s.toLowerCase()).sort().join("|");
+const dmOther = id => id.slice(3).split("|").find(n => n !== user.toLowerCase()) || "?";
+const roomColor = id => { const r = PUBLIC.find(r=>r.id===id); return r ? r.color : "#6c5ce7"; };
+const roomLabel = id => isDM(id) ? "🔒 " + dmOther(id) : (PUBLIC.find(r=>r.id===id)?.name || id);
+
+const savedTheme = localStorage.getItem("chat_theme");
+if (savedTheme === "dark") document.documentElement.dataset.theme = "dark";
+else if (!savedTheme && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme = "dark";
+function refreshThemeBtn(){ $("themeBtn").textContent = document.documentElement.dataset.theme === "dark" ? "🌙" : "☀️"; }
+refreshThemeBtn();
+$("themeBtn").onclick = () => {
+  if (document.documentElement.dataset.theme === "dark") {
+    document.documentElement.removeAttribute("data-theme");
+    localStorage.setItem("chat_theme", "light");
+  } else {
+    document.documentElement.dataset.theme = "dark";
+    localStorage.setItem("chat_theme", "dark");
+  }
+  refreshThemeBtn();
+};
+
+$("userbox").textContent = "👤 " + user;
+
+function renderRooms(){
+  let html = "";
+  const groups = [["salas","Salas"],["comunidades","Comunidades"],["prov","Provincias"],["priv","Privados"]];
+  for (const [key, label] of groups){
+    const list = key==="priv" ? dms.map(o=>({id:dmId(o), name:"🔒 "+o, color:"#6c5ce7"})) : PUBLIC.filter(r=>r.sec===key);
+    if (!list.length) continue;
+    html += `<div class="sec">${label}</div>` + list.map(r =>
+      `<div class="room${r.id===active?" active":""}" data-id="${r.id}"><span class="dot" style="background:${r.color}"></span><span class="nm">${r.name}</span></div>`
+    ).join("");
+  }
+  $("rooms").innerHTML = html;
+  document.querySelectorAll(".room").forEach(el => el.onclick = () => {
+    active = el.dataset.id; seen.clear(); $("msgs").innerHTML = "";
+    renderHeader(); renderRooms(); openMenu(false);
+    ensureChannel(active);
+    renderGame();
+    addNote("Estás en: " + roomLabel(active) + (isDM(active) ? " — solo ustedes dos lo ven" : ""));
+  });
+}
+function renderHeader(){
+  $("roomName").textContent = roomLabel(active);
+  $("picBtn").classList.toggle("show", isDM(active));
+  $("gameBtn").style.display = isDM(active) ? "block" : "none";
+  if (!isDM(active)) endGameLocal();
+}
+renderRooms(); renderHeader();
+
+const chatCh = sb.channel("chat-rooms");
+chatCh.on("broadcast", {event:"msg"}, ({payload}) => addMsg(payload));
+chatCh.on("presence", {event:"sync"}, refreshOnline);
+chatCh.on("presence", {event:"join"}, refreshOnline);
+chatCh.on("presence", {event:"leave"}, refreshOnline);
+
+function refreshOnline(){
+  const st = chatCh.presenceState();
+  const users = new Set();
+  for (const k in st) (st[k]||[]).forEach(p => { if (p.user) users.add(p.user); });
+  const arr = [...users].sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()));
+  $("online").innerHTML = `<div class="sec">Conectados (${arr.length})</div>` + arr.map(u =>
+    `<div class="room" data-u="${esc(u)}"><span class="dot" style="background:#2ecc71"></span><span class="nm">${esc(u)}${u===user?" (vos)":""}</span></div>`
+  ).join("");
+  document.querySelectorAll("#online .room").forEach(el => el.onclick = () => {
+    const u = el.dataset.u;
+    $("sidebar").classList.remove("open");
+    if (u !== user) openDM(u);
+  });
+}
+
+ensureChannel("user-" + user.toLowerCase());
+
+function ensureChannel(id){
+  if (subscribed.has(id)) return;
+  subscribed.add(id);
+  sb.channel(id)
+    .on("broadcast", {event:"msg"}, ({payload}) => addMsg(payload))
+    .on("broadcast", {event:"game"}, ({payload}) => {
+      if (payload.room !== active) return;
+      if (payload.end) { G = null; renderGame(); return; }
+      G = {game: payload.g._g, room: payload.room, st: payload.g};
+      renderGame();
+    })
+    .subscribe();
+}
+
+sb.channel("user-" + user.toLowerCase())
+  .on("broadcast", {event:"dm-invite"}, ({payload}) => {
+    if (!dms.find(o => dmId(o) === payload.room)) {
+      dms.push(payload.from); localStorage.setItem("chat_dms", JSON.stringify(dms));
+      renderRooms(); addNote("💬 " + payload.from + " te abrió un privado");
+    }
+    ensureChannel(payload.room);
+    showPVNotify(payload.from, payload.room);
+  })
+  .subscribe();
+
+chatCh.subscribe(async s => {
+  $("conn").textContent = s === "SUBSCRIBED" ? "● en línea" : "conectando…";
+  $("conn").style.color = s === "SUBSCRIBED" ? "#2ecc71" : "var(--muted)";
+  if (s === "SUBSCRIBED") { await chatCh.track({user}); addNote("🤖 Moderador activo: este chat es solo para mayores de 18 años."); }
+});
+
+function openDM(other){
+  other = other.trim().slice(0,20);
+  if (!other || other.toLowerCase() === user.toLowerCase()) return;
+  const id = dmId(other);
+  if (!dms.find(o => dmId(o) === id)) { dms.push(other); localStorage.setItem("chat_dms", JSON.stringify(dms)); }
+  active = id; seen.clear(); $("msgs").innerHTML = "";
+  ensureChannel(id); renderHeader(); renderRooms();
+  renderGame();
+  addNote("Privado con " + other + " — tocá 📷 para enviar fotos");
+}
+$("dmBtn").onclick = () => { const n = prompt("¿Con quién querés chatear en privado? Escribí su nombre exacto:"); if (n) openDM(n); };
+
+function scroll(){ $("msgs").scrollTop = $("msgs").scrollHeight; }
+function addNote(t){
+  $("msgs").insertAdjacentHTML("beforeend", `<div style="text-align:center;font-size:12px;color:var(--muted)">${esc(t)}</div>`);
+  scroll();
+}
+function ytId(url){
+  const m = String(url).match(/(?:youtube\.com\/(?:watch\?[^#]*v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+function ytHTML(id){
+  return `<div class="ytp" data-id="${id}"><div id="ytplayer"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" loading="lazy" alt="YouTube"><div class="play">▶</div></div></div>`;
+}
+function bindPlayers(){
+  document.querySelectorAll(".ytp").forEach(el => {
+    if (el.dataset.done) return; el.dataset.done = "1";
+    el.onclick = () => {
+      el.innerHTML = `<div style="position:relative"><button class="ytclose" style="position:absolute;top:6px;right:6px;z-index:2;width:26px;height:26px;border:none;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;cursor:pointer;font-size:13px;line-height:1">✕</button><div id="ytplayer"><iframe src="https://www.youtube-nocookie.com/embed/${el.dataset.id}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div></div>`;
+      el.querySelector(".ytclose").onclick = (ev) => {
+        ev.stopPropagation();
+        el.remove();
+      };
+    };
+  });
+}
+function addMsg(m){
+  const key = m.room + m.ts + m.user;
+  if (seen.has(key)) return; seen.add(key);
+  if (isBannedNow(m.user.toLowerCase())) return;
+  if (m.text && checkMsg(m.text)) { reportBan(m.user); return; }
+  if (m.room !== active) {
+    if (isDM(m.room)) showPVNotify(m.user, m.room);
+    return;
+  }
+  const mine = m.user === user;
+  const yt = m.yt || ytId(m.text);
+  const body = m.img
+    ? `<img src="${m.img}" loading="lazy">`
+    : yt ? ytHTML(yt) : esc(m.text);
+  $("msgs").insertAdjacentHTML("beforeend",
+    `<div class="msg${mine?" mine":""}">
+      <div class="av" style="background:${mine?"var(--accent)":hcolor(m.user)}">${initials(m.user)}</div>
+      <div class="bdy"><div class="meta"><span class="u">${esc(m.user)}</span><span class="t">${m.h}</span></div>
+      <div class="bbl">${body}</div></div>
+    </div>`);
+  const u = $("msgs").lastElementChild.querySelector(".u");
+  if (!mine) u.onclick = () => openDM(m.user);
+  bindPlayers();
+  scroll();
+}
+
+function sendMsg(payload){
+  payload.room = active; payload.user = user; payload.ts = Date.now(); payload.h = now();
+  addMsg(payload);
+  const ch = isDM(active) ? active : "chat-rooms";
+  sb.channel(ch).send({type:"broadcast", event:"msg", payload});
+  if (isDM(active)) {
+    const other = dmOther(active);
+    sb.channel("user-" + other).send({type:"broadcast", event:"dm-invite", payload:{from:user, room:active}});
+  }
+}
+// ─── Filtro de contenido: solo mayores de 18 ───
+const LEET = {"0":"o","1":"i","3":"e","4":"a","5":"s","7":"t","8":"b","@":"a","$":"s","!":"i","+":"t"};
+function flatten(str){
+  let t = String(str).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  t = t.replace(/[0134578@$!+]/g, c => LEET[c] || c);
+  return t.replace(/[^a-z]/g,"");
+}
+const BLOCK_WORDS = ["menor","menores","quinceanera","quinceaneras","preadolescente","preadolescentes","adolescente","adolescentes","preteen","teen","teenager","ninita","ninitas","puberto","puberta","underage","under18","sub18","infante","infantes","pedofil","pedofilia"];
+const AGE_WORDS = ["uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve","diez","once","doce","trece","catorce","quince","dieciseis","diecisiete","anitos","anito"];
+const AGE_PHRASES = ["menorde","menoresde","menosde"];
+function checkMsg(text, checkNumbers = true){
+  const flat = flatten(text);
+  if (BLOCK_WORDS.some(w => flat.includes(w))) return "palabra";
+  if (AGE_PHRASES.some(w => flat.includes(w))) return "frase";
+  if (!checkNumbers) return false;
+  const ageCtx = flat.includes("ano") || /tengo|soy|cumplo|edad|años/.test(flat);
+  if (!ageCtx) return false;
+  if (AGE_WORDS.some(w => flat.includes(w))) return "edad";
+  if ((String(text).match(/\d{1,2}/g) || []).some(v => +v < 18)) return "edad";
+  return false;
+}
+const BLOCK_NOTE = "🚫 Mensaje bloqueado: este chat es solo para mayores de 18 años.";
+
+// ─── Moderador automático (bot) ───
+const banned = new Map();
+function isBannedNow(n){
+  const h = banned.get(n);
+  if (h === undefined) return false;
+  if (h === null) return true;
+  if (new Date(h).getTime() > Date.now()) return true;
+  banned.delete(n);
+  return false;
+}
+async function adminCmd(cmd, rest){
+  if (cmd === "bans") {
+    try {
+      const { data } = await sb.from("bans").select("nombre,hasta");
+      const list = (data || []).map(r => r.nombre + (r.hasta && new Date(r.hasta).getTime() > Date.now() ? " (temporal)" : " (permanente)"));
+      addNote("📋 Bans: " + (list.join(", ") || "ninguno"));
+    } catch(e){ addNote("⚠️ No se pudo leer la lista"); }
+    return;
+  }
+  const parts = rest.split(/\s+/);
+  const name = (parts[0] || "").toLowerCase();
+  if (!name) { addNote("Usá: /ban nombre [minutos] · /unban nombre · /bans"); return; }
+  if (cmd === "ban") {
+    const mins = parseInt(parts[1], 10);
+    const hasta = mins > 0 ? new Date(Date.now() + mins * 60000).toISOString() : null;
+    try {
+      await sb.from("bans").upsert({ nombre: name, hasta: hasta });
+      banned.set(name, hasta);
+      addNote("🚫 " + name + (hasta ? " baneado por " + mins + " min" : " baneado PERMANENTE"));
+    } catch(e){ addNote("⚠️ Error al banear"); }
+  }
+  if (cmd === "unban") {
+    try {
+      await sb.from("bans").delete().eq("nombre", name);
+      banned.delete(name);
+      addNote("✅ " + name + " desbaneado");
+    } catch(e){ addNote("⚠️ Error al desbanear"); }
+  }
+}
+function kickOut(){ $("kick").style.display = "flex"; }
+async function reportBan(nombre){
+  try { await sb.from("bans").upsert({nombre: nombre.toLowerCase(), hasta: null}); } catch(e){}
+}
+async function loadBans(){
+  try {
+    const { data } = await sb.from("bans").select("nombre");
+    (data || []).forEach(r => banned.set(r.nombre.toLowerCase(), r.hasta || null));
+    if (isBannedNow(user.toLowerCase())) kickOut();
+  } catch(e){}
+}
+sb.channel("moderacion")
+  .on("postgres_changes", {event:"INSERT", schema:"public", table:"bans"}, ({payload}) => {
+    const n = payload.new.nombre;
+    banned.set(n, payload.new.hasta || null);
+    if (isBannedNow(n)) kickOut();
+    else addNote("🤖 Moderador: " + n + " fue expulsado por contenido prohibido.");
+  })
+  .subscribe();
+loadBans();
+
+async function searchYT(q){
+  addNote("🔎 Buscando «" + q + "» en YouTube…");
+  const insts = ["https://pipedapi.kavin.rocks", "https://pipedapi.adminforge.de", "https://api.piped.private.coffee"];
+  for (const base of insts) {
+    try {
+      const r = await fetch(base + "/search?q=" + encodeURIComponent(q) + "&filter=videos");
+      if (!r.ok) continue;
+      const data = await r.json();
+      const vids = (data.items || []).filter(v => v.url && v.url.includes("watch?v=")).slice(0, 6);
+      if (vids.length) { showYTPicker(vids, q); return; }
+    } catch(e){}
+  }
+  addNote("⚠️ No se pudo buscar ahora. Probá de nuevo o pegá el link directo con 🎵.");
+}
+
+function showYTPicker(vids, q){
+  const old = $("ytpick"); if (old) old.remove();
+  const box = document.createElement("div");
+  box.id = "ytpick";
+  box.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:76px;z-index:60;width:min(420px,94vw);max-height:50dvh;overflow-y:auto;background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 30px rgba(0,0,0,.5)";
+  box.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 4px 8px"><b style="font-size:13px">Resultados para «' + esc(q) + '»</b><button id="ytpickX" style="border:none;background:transparent;color:var(--muted);font-size:16px;cursor:pointer">✕</button></div>'
+    + vids.map((v,i) => {
+        const id = ytId("https://www.youtube.com" + v.url) || "";
+        return '<div class="ytitem" data-i="' + i + '" style="display:flex;gap:8px;align-items:center;padding:6px;border-radius:8px;cursor:pointer">'
+          + '<img src="https://i.ytimg.com/vi/' + id + '/default.jpg" style="width:64px;border-radius:6px;flex:none">'
+          + '<span style="font-size:13px;line-height:17px">' + esc(v.title || "Sin título")
+          + '<br><small style="color:var(--muted)">' + esc(v.uploaderName || "") + '</small></span></div>';
+      }).join("");
+  document.body.appendChild(box);
+  $("ytpickX").onclick = () => box.remove();
+  box.querySelectorAll(".ytitem").forEach(el => el.onclick = () => {
+    const v = vids[+el.dataset.i];
+    const id = ytId("https://www.youtube.com" + v.url);
+    box.remove();
+    if (id) sendMsg({yt:id, text:(v.title || "").slice(0,80)});
+  });
+}
+
+function send(){
+  const text = $("inp").value.trim();
+  if (!text) return;
+  if (user.toLowerCase() === ADMIN.toLowerCase()) {
+    const adm = text.match(/^\/(ban|unban|bans)\b\s*(.*)$/i);
+    if (adm) { adminCmd(adm[1].toLowerCase(), adm[2].trim()); $("inp").value = ""; return; }
+  }
+  const cmd = text.match(/^[!\/]yt\s+(.+)$/i);
+  if (cmd) { $("inp").value = ""; searchYT(cmd[1].trim()); return; }
+  const bad = checkMsg(text);
+  if (bad) { reportBan(user); kickOut(); return; }
+  $("inp").value = "";
+  sendMsg({text});
+}
+$("send").onclick = send;
+$("inp").addEventListener("keydown", e => { if (e.key==="Enter") send(); });
+function openMenu(o){ $("sidebar").classList.toggle("open", o); $("backdrop").style.display = o ? "block" : "none"; }
+$("menuBtn").onclick = () => openMenu(!$("sidebar").classList.contains("open"));
+$("closeBtn").onclick = () => openMenu(false);
+$("backdrop").onclick = () => openMenu(false);
+let pvTimer = null;
+function showPVNotify(from, roomId){
+  if (roomId === active) return;
+  const el = $("pvnote");
+  el.textContent = "🔒 Mensaje de " + from + " — tocá para abrir";
+  el.dataset.user = from;
+  el.style.display = "block";
+  clearTimeout(pvTimer);
+  pvTimer = setTimeout(() => { el.style.display = "none"; }, 6000);
+}
+$("pvnote").onclick = () => {
+  const u = $("pvnote").dataset.user;
+  $("pvnote").style.display = "none";
+  openDM(u);
+};
+$("exitBtn").onclick = () => {
+  if (!confirm("¿Salir del chat? Se cerrará tu sesión y desaparecerás de Conectados.")) return;
+  localStorage.removeItem("chat_user");
+  localStorage.removeItem("chat_dms");
+  try { sb.removeAllChannels(); } catch(e){}
+  document.body.innerHTML = '<div style="height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:sans-serif;background:var(--bg);color:var(--text);text-align:center;padding:24px"><div style="font-size:52px">👋</div><h2 style="font-size:22px">Saliste del chat</h2><p style="color:var(--muted);font-size:14px;max-width:300px;line-height:20px">Tu sesión se cerró y ya no estás conectado.</p><button onclick="location.reload()" style="padding:12px 24px;border:none;border-radius:10px;background:#6c5ce7;color:#fff;font-size:15px;cursor:pointer">Entrar de nuevo</button></div>';
+};
+
+// ─── Panel de emojis ───
+const EMOJIS = ["😀","😂","🤣","😊","😍","😘","😜","🤔","😎","😢","😡","🥺","😴","🤗","🙌","👍","👎","👏","🙏","💪","👋","🤝","❤️","💔","💕","🔥","✨","🎉","🎂","🌹","🍀","🌙","⭐","☀️","🍕","🍺","☕","⚽","🎵","🎮","📷","✈️","🏠","💯","🤖","🚫","🇦🇷"];
+$("emojiBtn").onclick = () => {
+  const oldBox = $("emojipick");
+  if (oldBox) { oldBox.remove(); return; }
+  const box = document.createElement("div");
+  box.id = "emojipick";
+  box.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:76px;z-index:60;width:min(360px,92vw);max-height:45dvh;overflow-y:auto;background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:10px;box-shadow:0 8px 30px rgba(0,0,0,.5)";
+  box.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 4px 8px"><b style="font-size:13px">Emojis</b><button id="emojiX" style="border:none;background:transparent;color:var(--muted);font-size:16px;cursor:pointer">✕</button></div>'
+    + '<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:2px">'
+    + EMOJIS.map(e => '<button class="emj" style="border:none;background:transparent;font-size:22px;padding:6px 0;cursor:pointer">' + e + '</button>').join("")
+    + '</div>';
+  document.body.appendChild(box);
+  $("emojiX").onclick = () => box.remove();
+  box.querySelectorAll(".emj").forEach(el => el.onclick = () => {
+    $("inp").value += el.textContent;
+    $("inp").focus();
+  });
+};
+
+// ─── Fotos en privado ───
+$("picBtn").onclick = () => { if (isDM(active)) $("fileInp").click(); };
+$("fileInp").onchange = async e => {
+  const file = e.target.files[0]; e.target.value = "";
+  if (!file || !isDM(active)) return;
+  try {
+    addNote("Enviando foto…");
+    const blob = await compress(file);
+    const path = active.replace(/[^a-z0-9]/gi, "_") + "/" + Date.now() + ".jpg";
+    const { error } = await sb.storage.from(PHOTO_BUCKET).upload(path, blob, {contentType:"image/jpeg"});
+    if (error) throw error;
+    const { data } = sb.storage.from(PHOTO_BUCKET).getPublicUrl(path);
+    sendMsg({img: data.publicUrl, text:"📷 Foto"});
+  } catch(err) {
+    addNote("⚠️ No se pudo enviar la foto. Verificá que el bucket '" + PHOTO_BUCKET + "' exista y sea público.");
+  }
+};
+function compress(file){
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 1280;
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(b => b ? res(b) : rej("error"), "image/jpeg", 0.8);
+    };
+    img.onerror = rej;
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// ─── Sistema de juegos (solo privados) ───
+const GAMES = {
+  ahorcado:{name:"Ahorcado",ready:true},
+  chinchon:{name:"Chinchón",ready:true},
+  escoba:{name:"Escoba del 15",ready:true}
+};
+
+function freshState(key){
+  const other = dmOther(active);
+  if (key==="ahorcado") return {_g:key, players:[user,other], score:[0,0], phase:"set", word:"", guessed:[], lives:6, msg: user + " debe fijar la palabra"};
+  if (key==="chinchon"){
+    const deck=chShuffle(chDeck());
+    return {_g:key, players:[user,other], score:[0,0], deck, hands:[deck.splice(0,7),deck.splice(0,7)], discard:[deck.pop()], turn:0, drawn:false, over:false, msg:"Turno de "+user};
+  }
+  if (key==="escoba"){
+    const deck=esShuffle(esDeck());
+    return {_g:key, players:[user,other], score:[0,0], deck, table:deck.splice(0,4), hands:[deck.splice(0,3),deck.splice(0,3)], turn:0, captured:[[],[]], escobas:[0,0], last:-1, over:false, msg:"Turno de "+user};
+  }
+  return {_g:key};
+}
+function sendState(end){
+  sb.channel(active).send({type:"broadcast", event:"game", payload:{room:active, ts:Date.now(), g:end?null:G.st, end:!!end}});
+}
+function endGameLocal(){ G=null; const b=$("gamebox"); if(b) b.remove(); }
+
+$("gameBtn").onclick = () => {
+  const oldBox = $("gamepick");
+  if (oldBox) { oldBox.remove(); return; }
+  const box = document.createElement("div");
+  box.id = "gamepick";
+  box.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:76px;z-index:60;width:min(340px,92vw);max-height:50dvh;overflow-y:auto;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:10px;box-shadow:0 8px 30px rgba(0,0,0,.15)";
+  box.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 4px 8px"><b style="font-size:13px">Juegos de a dos</b><button id="gpX" style="border:none;background:transparent;color:var(--muted);font-size:16px;cursor:pointer">✕</button></div>'
+    + Object.entries(GAMES).map(([k,v])=>'<div class="gpick" data-k="'+k+'" style="padding:9px 10px;border-radius:8px;cursor:pointer;font-size:14px;'+(v.ready?"":"opacity:.45")+'">'+(v.ready?"🎮":"🔜")+' '+v.name+(v.ready?"":" <small>(pronto)</small>")+'</div>').join("");
+  document.body.appendChild(box);
+  $("gpX").onclick = () => box.remove();
+  box.querySelectorAll(".gpick").forEach(el => el.onclick = () => {
+    const k = el.dataset.k;
+    box.remove();
+    if (!GAMES[k].ready) return;
+    G = {game:k, room:active, st:freshState(k)};
+    sendState();
+    renderGame();
+  });
+};
+
+function renderGame(){
+  let box = $("gamebox");
+  if (!G || G.room !== active) { if (box) box.remove(); return; }
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "gamebox";
+    $("msgs").prepend(box);
+  }
+  const other = dmOther(G.room);
+  const meIdx = G.st.players[0] === user ? 0 : 1;
+  let body = "";
+  if (G.game === "ahorcado") body = ahHTML();
+  if (G.game === "chinchon") body = chHTML(meIdx);
+  if (G.game === "escoba") body = esHTML(meIdx);
+  box.innerHTML = '<div class="gh"><div><b>🎮 ' + GAMES[G.game].name + '</b> <span class="gs">· ' + esc(G.st.players[0]) + ' vs ' + esc(G.st.players[1]) + ' · ' + G.st.score[0] + ':' + G.st.score[1] + '</span></div><button class="gx" id="gx">✕</button></div>'
+    + '<div class="gs" style="margin-bottom:8px">' + esc(G.st.msg || "") + '</div>' + body;
+  $("gx").onclick = () => { endGameLocal(); sendState(true); };
+  if (G.game === "ahorcado") ahBind();
+  if (G.game === "chinchon") chBind(meIdx);
+  if (G.game === "escoba") esBind(meIdx);
+}
+
+// ─── Ahorcado ───
+const AH_LETTERS = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+const AH_STAGES = ["🙂","😐","😕","😟","😨","😰","💀"];
+function ahMasked(st){
+  return st.word.toUpperCase().split("").map(c => st.guessed.includes(c) ? c : "▢").join(" ");
+}
+function ahHTML(){
+  const st = G.st;
+  if (st.phase === "set") {
+    if (st.players[0] !== user) return '<div class="gs" style="text-align:center">Esperando a que ' + esc(st.players[0]) + ' fije la palabra...</div>';
+    return '<div style="text-align:center"><input id="ahw" placeholder="Escribí la palabra" style="padding:9px 12px;border:1px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text);font-size:15px;width:70%"><button id="ahok" style="padding:9px 14px;border:none;border-radius:9px;background:var(--accent);color:#fff;cursor:pointer;font-size:14px;margin-left:6px">Fijar</button></div>';
+  }
+  const done = st.phase === "done";
+  const letters = AH_LETTERS.map(L => {
+    const used = st.guessed.includes(L) || done || st.players[1] !== user;
+    return '<button class="ahl" data-l="'+L+'" '+(used?"disabled":"")+' style="padding:5px 0;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);cursor:pointer;font-size:13px;font-weight:600">'+L+'</button>';
+  }).join("");
+  return '<div style="text-align:center"><div style="font-size:34px">'+AH_STAGES[6-st.lives]+'</div>'
+    + '<div style="font-size:22px;letter-spacing:4px;margin:8px 0;font-weight:700">'+ahMasked(st)+'</div>'
+    + '<div class="gs">Vidas: '+st.lives+'</div></div>'
+    + '<div class="ggrid" style="grid-template-columns:repeat(7,1fr);margin-top:8px">'+letters+'</div>'
+    + (done ? '<div style="text-align:center;margin-top:8px"><button id="ahnext" style="padding:8px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;font-size:13px">🔄 Nueva ronda (cambian roles)</button></div>' : '');
+}
+function ahBind(){
+  const st = G.st;
+  const ok = $("ahok");
+  if (ok) ok.onclick = () => {
+    const w = $("ahw").value.trim().toLowerCase();
+    if (!w || !/^[a-zñ]+$/.test(w)) { st.msg = "Solo letras, sin espacios"; sendState(); renderGame(); return; }
+    st.word = w; st.phase = "play"; st.guessed = []; st.lives = 6;
+    st.msg = "Adiviná la palabra, " + st.players[1];
+    sendState(); renderGame();
+  };
+  $("msgs").querySelectorAll(".ahl").forEach(el => el.onclick = () => {
+    if (st.phase !== "play" || st.players[1] !== user) return;
+    const L = el.dataset.l;
+    if (st.guessed.includes(L)) return;
+    st.guessed.push(L);
+    if (st.word.toUpperCase().includes(L)) {
+      if (st.word.toUpperCase().split("").every(c => st.guessed.includes(c))) {
+        st.phase = "done"; st.score[1]++; st.msg = "🏆 " + st.players[1] + " adivinó: " + st.word.toUpperCase();
+      } else st.msg = "✅ Bien! Letra " + L;
+    } else {
+      st.lives--;
+      if (st.lives <= 0) { st.phase = "done"; st.score[0]++; st.msg = "💀 " + st.players[0] + " ganó. Era: " + st.word.toUpperCase(); }
+      else st.msg = "❌ No está la " + L;
+    }
+    sendState(); renderGame();
+  });
+  const nx = $("ahnext");
+  if (nx) nx.onclick = () => {
+    const pl = G.st.players.reverse(), sc = G.st.score.reverse();
+    G.st = freshState("ahorcado");
+    G.st.players = pl; G.st.score = sc;
+    G.st.msg = pl[0] + " debe fijar la palabra";
+    sendState(); renderGame();
+  };
+}
+
+// ─── Chinchón ───
+const CH_SUITS = ["🪙","🏆","⚔️","🪵"];
+const CH_LABEL = {1:"A",2:"2",3:"3",4:"4",5:"5",6:"6",7:"7",10:"S",11:"C",12:"R"};
+function chDeck(){ const d=[]; for(let s2=0;s2<4;s2++) for(const v of [1,2,3,4,5,6,7,10,11,12]) d.push({v:v,s:s2}); return d; }
+function chShuffle(d){ for(let i=d.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=d[i]; d[i]=d[j]; d[j]=t; } return d; }
+function chValid(cs){
+  if (!cs.length) return true;
+  cs = cs.slice().sort((a,b)=>a.v-b.v);
+  const c0 = cs[0];
+  const same = cs.filter(c=>c.v===c0.v);
+  if (same.length>=3 && chValid(cs.filter(c=>c.v!==c0.v))) return true;
+  const suitVals = cs.filter(c=>c.s===c0.s).map(c=>c.v);
+  const run = [c0.v];
+  while (suitVals.includes(run[run.length-1]+1)) run.push(run[run.length-1]+1);
+  for (let len=3; len<=run.length; len++){
+    const take = run.slice(0,len);
+    const rest = cs.filter(c=>!(c.s===c0.s && take.includes(c.v)));
+    if (chValid(rest)) return true;
+  }
+  return false;
+}
+function chHand(hand, enabled){
+  return hand.map((c,i)=>'<button class="chc" data-i="'+i+'" '+(enabled?"":"disabled")+' style="padding:6px 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--text);font-size:14px;font-weight:700;cursor:pointer">'+CH_LABEL[c.v]+CH_SUITS[c.s]+'</button>').join(" ");
+}
+function chHTML(meIdx){
+  const st = G.st;
+  const top = st.discard[st.discard.length-1];
+  let ctrl = "";
+  if (st.players[st.turn]===user && !st.over){
+    if (!st.drawn) ctrl = '<button id="chdraw" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);cursor:pointer;font-size:13px">🂠 Levantar del mazo ('+st.deck.length+')</button> '
+      + '<button id="chtake" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);cursor:pointer;font-size:13px">⬇️ Tomar '+CH_LABEL[top.v]+CH_SUITS[top.s]+'</button> '
+      + '<button id="chclose" style="padding:8px 12px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;font-size:13px">🏁 Cerrar</button>';
+    else ctrl = '<div class="gs" style="text-align:center">Tocá una carta de tu mano para descartar</div>';
+  }
+  const again = st.over ? '<div style="text-align:center;margin-top:8px"><button id="gagain" style="padding:8px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;font-size:13px">🔄 Revancha</button></div>' : '';
+  return '<div class="gs">Mazo: '+st.deck.length+' · Descarte: '+CH_LABEL[top.v]+CH_SUITS[top.s]+'</div>'
+    + '<div style="margin:8px 0;text-align:center">'+ctrl+'</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center">'+chHand(st.hands[meIdx], st.players[st.turn]===user && st.drawn && !st.over)+'</div>' + again;
+}
+function chBind(meIdx){
+  const st = G.st;
+  const dr = $("chdraw");
+  if (dr) dr.onclick = () => {
+    if (!st.deck.length){ const top=st.discard.pop(); st.deck=chShuffle(st.discard); st.discard=[top]; }
+    st.hands[meIdx].push(st.deck.pop()); st.drawn = true;
+    st.msg = user + " levantó una carta";
+    sendState(); renderGame();
+  };
+  const tk = $("chtake");
+  if (tk) tk.onclick = () => {
+    if (!st.discard.length) return;
+    st.hands[meIdx].push(st.discard.pop()); st.drawn = true;
+    st.msg = user + " tomó del descarte";
+    sendState(); renderGame();
+  };
+  const cl = $("chclose");
+  if (cl) cl.onclick = () => {
+    const hand = st.hands[meIdx];
+    if (hand.length !== 7){ st.msg = "Necesitás 7 cartas para cerrar"; sendState(); renderGame(); return; }
+    if (chValid(hand)){
+      const loser = 1-meIdx;
+      const dw = st.hands[loser].reduce((a,c)=>a+c.v,0);
+      st.score[meIdx] += dw===0 ? 2 : 1;
+      st.over = true;
+      st.msg = "🏁 " + user + " cerró con mano válida" + (dw===0?" · ¡CHINCHÓN!":"") + " · " + st.players[loser] + " tenía " + dw + " puntos muertos";
+    } else {
+      st.score[1-meIdx] += 1; st.over = true;
+      st.msg = "❌ Cierre inválido · gana la ronda " + st.players[1-meIdx];
+    }
+    sendState(); renderGame();
+  };
+  $("msgs").querySelectorAll(".chc").forEach(el => el.onclick = () => {
+    if (st.over || st.players[st.turn] !== user || !st.drawn) return;
+    st.discard.push(st.hands[meIdx].splice(+el.dataset.i,1)[0]);
+    st.drawn = false; st.turn = 1-st.turn;
+    st.msg = "Turno de " + st.players[st.turn];
+    sendState(); renderGame();
+  });
+  const ag = $("gagain");
+  if (ag) ag.onclick = () => { const pl=G.st.players, sc=G.st.score; G.st=freshState("chinchon"); G.st.players=pl; G.st.score=sc; G.st.msg="Revancha: turno de "+pl[0]; sendState(); renderGame(); };
+}
+
+// ─── Escoba del 15 ───
+function esValue(c){ return c.v<=7 ? c.v : (c.v===10?8:c.v===11?9:10); }
+function esDeck(){ const d=[]; for(let s2=0;s2<4;s2++) for(const v of [1,2,3,4,5,6,7,10,11,12]) d.push({v:v,s:s2}); return d; }
+function esShuffle(d){ for(let i=d.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=d[i]; d[i]=d[j]; d[j]=t; } return d; }
+function esFind(table, card){
+  const tv = table.map(esValue), cv = esValue(card);
+  let best = null;
+  for (let m=1; m<(1<<table.length); m++){
+    let sum=cv, cnt=0, idx=[];
+    for (let i=0;i<table.length;i++) if (m&(1<<i)){ sum+=tv[i]; cnt++; idx.push(i); }
+    if (sum===15 && (!best || cnt>best.length)) best = idx;
+  }
+  return best;
+}
+function esDealOrEnd(st){
+  if (st.hands[0].length || st.hands[1].length) return;
+  if (st.deck.length >= 6){
+    st.hands[0]=st.deck.splice(0,3); st.hands[1]=st.deck.splice(0,3);
+    st.msg = "Reparto de 3 cartas · turno de " + st.players[st.turn];
+  } else {
+    if (st.last >= 0){ st.captured[st.last].push(...st.table); st.table=[]; }
+    const pts=[st.escobas[0],st.escobas[1]];
+    const stats=[ st.captured.map(c=>c.length), st.captured.map(c=>c.filter(x=>x.s===0).length), st.captured.map(c=>c.filter(x=>x.v===7).length) ];
+    const mx=a=>a[0]===a[1]?-1:(a[0]>a[1]?0:1);
+    stats.forEach(a=>{ const w=mx(a); if(w>=0) pts[w]++; });
+    const so=st.captured.findIndex(c=>c.some(x=>x.v===7&&x.s===0));
+    if (so>=0) pts[so]++;
+    const w = pts[0]===pts[1]?-1:(pts[0]>pts[1]?0:1);
+    if (w>=0) st.score[w]++;
+    st.over = true;
+    st.msg = "🧹 Cuenta final: "+pts[0]+" a "+pts[1]+(w>=0?" · gana la ronda "+st.players[w]:" · empate");
+  }
+}
+function esHTML(meIdx){
+  const st = G.st;
+  const tableRow = st.table.map((c,i)=>'<span style="padding:5px 7px;border:1px solid var(--border);border-radius:7px;background:var(--bg);font-size:13px;font-weight:700">'+CH_LABEL[c.v]+CH_SUITS[c.s]+'</span>').join(" ") || '<span class="gs">(vacía)</span>';
+  const handRow = st.hands[meIdx].map((c,i)=>'<button class="esc" data-i="'+i+'" '+(st.players[st.turn]===user&&!st.over?"":"disabled")+' style="padding:6px 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--text);font-size:14px;font-weight:700;cursor:pointer">'+CH_LABEL[c.v]+CH_SUITS[c.s]+'</button>').join(" ");
+  const again = st.over ? '<div style="text-align:center;margin-top:8px"><button id="gagain" style="padding:8px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;font-size:13px">🔄 Revancha</button></div>' : '';
+  return '<div class="gs">Mesa ('+st.table.length+') · Mazo: '+st.deck.length+' · Escobas: '+st.escobas[0]+'-'+st.escobas[1]+'</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin:8px 0">'+tableRow+'</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center">'+handRow+'</div>' + again;
+}
+function esBind(meIdx){
+  const st = G.st;
+  $("msgs").querySelectorAll(".esc").forEach(el => el.onclick = () => {
+    if (st.over || st.players[st.turn] !== user) return;
+    const i = +el.dataset.i;
+    const card = st.hands[meIdx].splice(i,1)[0];
+    const subset = esFind(st.table, card);
+    if (subset){
+      st.captured[meIdx].push(card, ...subset.map(x=>st.table[x]));
+      const taken = new Set(subset);
+      st.table = st.table.filter((_,x)=>!taken.has(x));
+      st.last = meIdx;
+      if (!st.table.length){ st.escobas[meIdx]++; st.msg = "🧹 ¡ESCOBA de " + user + "!"; }
+      else st.msg = user + " levanta " + (subset.length+1) + " cartas";
+    } else {
+      st.table.push(card);
+      st.msg = user + " tira " + CH_LABEL[card.v] + CH_SUITS[card.s] + " a la mesa";
+    }
+    const wasOver = st.over;
+    esDealOrEnd(st);
+    if (!st.over){ st.turn = 1-st.turn; if (!st.msg.startsWith("Reparto")) st.msg += " · turno de " + st.players[st.turn]; }
+    sendState(); renderGame();
+  });
+  const ag = $("gagain");
+  if (ag) ag.onclick = () => { const pl=G.st.players, sc=G.st.score; G.st=freshState("escoba"); G.st.players=pl; G.st.score=sc; G.st.msg="Revancha: turno de "+pl[0]; sendState(); renderGame(); };
+}
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
